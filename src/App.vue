@@ -153,7 +153,7 @@ export default {
       }
 
       try {
-        this.modalData.request = JSON.parse(item.response);
+        this.modalData.request = JSON.parse(item.request);
       } catch (e) {
         this.modalData.request = item.request;
       }
