@@ -38,20 +38,36 @@
             v-model="form.site"
             :options="sites"
             :fixed="true"
+            @input="onChange()"
             required
           ></b-form-select>
         </b-form-group>
 
         <b-form-group id="fieldset-1" label-for="input-1" label="Key: ">
-          <b-form-input id="input-1" v-model="form.key" trim></b-form-input>
+          <b-form-input
+            id="input-1"
+            v-model="form.key"
+            @input="onChange()"
+            trim
+          ></b-form-input>
         </b-form-group>
 
-        <b-form-group id="fieldset-1" label-for="input-1" label="URL: ">
-          <b-form-input id="input-1" v-model="form.url" trim></b-form-input>
+        <b-form-group id="fieldset-2" label-for="input-2" label="URL: ">
+          <b-form-input
+            id="input-2"
+            v-model="form.url"
+            @input="onChange()"
+            trim
+          ></b-form-input>
         </b-form-group>
 
-        <b-form-group id="fieldset-1" label-for="input-1" label="Limit: ">
-          <b-form-input id="input-1" v-model="form.limit" trim></b-form-input>
+        <b-form-group id="fieldset-3" label-for="input-3" label="Limit: ">
+          <b-form-input
+            id="input-3"
+            v-model="form.limit"
+            @input="onChange()"
+            trim
+          ></b-form-input>
         </b-form-group>
 
         <label for="example-datepicker">Choose a date</label>
@@ -117,6 +133,9 @@ export default {
     }, 5000);
   },
   methods: {
+    onChange() {
+      this.loadData();
+    },
     loadData: async function () {
       axios
         .post("/api/load", this.form)
