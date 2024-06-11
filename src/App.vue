@@ -1,0 +1,190 @@
+<template>
+  <main>
+    <div class="container-fluid">
+      <b-modal v-model="modalShow">
+        <div class="d-block">
+          <label for="response">Request</label>
+          <textarea
+            style="
+              width: 100%;
+              min-height: 30rem;
+              font-size: 0.8rem;
+              line-height: 1.2;
+            "
+            cols="30"
+            rows="10"
+            v-model="modalData.request"
+            disabled
+          >
+          </textarea>
+
+          <label for="response">Response</label>
+          <textarea
+            disabled
+            style="
+              width: 100%;
+              min-height: 30rem;
+              font-size: 0.8rem;
+              line-height: 1.2;
+            "
+            cols="30"
+            rows="10"
+            v-model="modalData.response"
+          >
+          </textarea>
+        </div>
+      </b-modal>
+
+      <b-form @submit="loadData" @reset="reset">
+        <b-form-group id="input-group-3" label="Site:" label-for="input-3">
+          <b-form-select
+            id="input-3"
+            v-model="form.site"
+            :options="sites"
+            :fixed="true"
+            required
+          ></b-form-select>
+        </b-form-group>
+
+        <b-form-group id="fieldset-1" label-for="input-1" label="Key: ">
+          <b-form-input id="input-1" v-model="form.key" trim></b-form-input>
+        </b-form-group>
+
+        <b-form-group id="fieldset-1" label-for="input-1" label="URL: ">
+          <b-form-input id="input-1" v-model="form.url" trim></b-form-input>
+        </b-form-group>
+
+        <b-form-group id="fieldset-1" label-for="input-1" label="Limit: ">
+          <b-form-input id="input-1" v-model="form.limit" trim></b-form-input>
+        </b-form-group>
+
+        <label for="example-datepicker">Choose a date</label>
+        <VueDatePicker v-model="form.date" range locale="kr" />
+
+        <b-button type="submit" variant="primary">Submit</b-button>
+        <b-button type="reset" variant="danger">Reset</b-button>
+      </b-form>
+
+      <!-- <b-table striped hover :items="items"></b-table> -->
+
+      <table class="table table-striped" style="width: 100%">
+        <thead class="thead-dark">
+          <tr>
+            <th scope="col">시간</th>
+            <th scope="col">Method</th>
+            <th scope="col">Url</th>
+            <th scope="col">Status</th>
+            <th scope="col">Key</th>
+            <th scope="col">Detail</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr
+            v-for="item in items"
+            :key="item._id"
+            :class="item.status !== '200' ? 'table-danger' : ''"
+          >
+            <td>{{ item.timestamp }}</td>
+            <td>{{ item.method }}</td>
+            <td>{{ item.url }}</td>
+            <td>{{ item.status }}</td>
+            <td>{{ item.key }}</td>
+            <td>
+              <button @click="fModalShow(item)" class="btn btn-secondary">
+                Detail
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </main>
+</template>
+
+<script>
+import axios from "axios";
+import VueDatePicker from "@vuepic/vue-datepicker";
+import "@vuepic/vue-datepicker/dist/main.css";
+
+export default {
+  setup() {},
+  components: {
+    VueDatePicker,
+  },
+  created() {
+    this.loadData();
+
+    // 5초마다 데이터를 가져옴
+    setInterval(() => {
+      this.loadData();
+    }, 5000);
+  },
+  methods: {
+    loadData: async function () {
+      axios
+        .post("/api/load", this.form)
+        .then((response) => {
+          for (let i = 0; i < response.data.length; i++) {
+            response.data[i].timestamp = new Date(
+              response.data[i].timestamp
+            ).toLocaleString();
+          }
+          this.items = response.data;
+        })
+        .catch(() => {
+          console.log("error");
+        });
+    },
+
+    reset: function () {
+      this.form = {
+        site: "crm-prod",
+        key: "",
+        url: "",
+        limit: 100,
+      };
+    },
+
+    fModalShow: function (item) {
+      this.modalShow = true;
+      this.modalData = {};
+
+      try {
+        this.modalData.response = JSON.stringify(
+          JSON.parse(item.response),
+          null,
+          2
+        );
+      } catch (e) {
+        this.modalData.response = item.response;
+      }
+
+      try {
+        this.modalData.request = JSON.stringify(
+          JSON.parse(item.request),
+          null,
+          2
+        );
+      } catch (e) {
+        this.modalData.request = item.request;
+      }
+    },
+  },
+  data() {
+    return {
+      sites: ["crm-prod"],
+      modalShow: false,
+      modalData: {},
+
+      items: [],
+
+      form: {
+        site: "crm-prod",
+        key: "",
+        url: "",
+        limit: 100,
+      },
+    };
+  },
+};
+</script>
