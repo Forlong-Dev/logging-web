@@ -1,18 +1,14 @@
 <template>
   <main>
     <div class="container-fluid">
-      <b-modal v-model="modalShow">
+      <b-modal v-model="modalShow" size="xl">
         <div class="box">
           <label for="request">Request</label>
           <JsonViewer
             name="request"
             :value="modalData.request"
-            :expanded="false"
-            :expandDepth="4"
             :previewMode="true"
             copyable
-            boxed
-            sort
             theme="light"
           />
 
@@ -20,12 +16,7 @@
           <JsonViewer
             name="response"
             :value="modalData.response"
-            :expanded="false"
-            :expandDepth="4"
             :previewMode="true"
-            copyable
-            boxed
-            sort
             theme="dark"
           />
         </div>
