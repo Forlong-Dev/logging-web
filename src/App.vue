@@ -2,36 +2,32 @@
   <main>
     <div class="container-fluid">
       <b-modal v-model="modalShow">
-        <div class="d-block">
-          <label for="response">Request</label>
-          <textarea
-            style="
-              width: 100%;
-              min-height: 30rem;
-              font-size: 0.8rem;
-              line-height: 1.2;
-            "
-            cols="30"
-            rows="10"
-            v-model="modalData.request"
-            disabled
-          >
-          </textarea>
+        <div class="box">
+          <label for="request">Request</label>
+          <JsonViewer
+            name="request"
+            :value="modalData.request"
+            :expanded="false"
+            :expandDepth="4"
+            :previewMode="true"
+            copyable
+            boxed
+            sort
+            theme="light"
+          />
 
           <label for="response">Response</label>
-          <textarea
-            disabled
-            style="
-              width: 100%;
-              min-height: 30rem;
-              font-size: 0.8rem;
-              line-height: 1.2;
-            "
-            cols="30"
-            rows="10"
-            v-model="modalData.response"
-          >
-          </textarea>
+          <JsonViewer
+            name="response"
+            :value="modalData.response"
+            :expanded="false"
+            :expandDepth="4"
+            :previewMode="true"
+            copyable
+            boxed
+            sort
+            theme="dark"
+          />
         </div>
       </b-modal>
 
@@ -105,6 +101,7 @@
 import axios from "axios";
 import VueDatePicker from "@vuepic/vue-datepicker";
 import "@vuepic/vue-datepicker/dist/main.css";
+import { JsonViewer } from "vue3-json-viewer";
 
 export default {
   setup() {},
@@ -150,21 +147,13 @@ export default {
       this.modalData = {};
 
       try {
-        this.modalData.response = JSON.stringify(
-          JSON.parse(item.response),
-          null,
-          2
-        );
+        this.modalData.response = JSON.parse(item.response);
       } catch (e) {
         this.modalData.response = item.response;
       }
 
       try {
-        this.modalData.request = JSON.stringify(
-          JSON.parse(item.request),
-          null,
-          2
-        );
+        this.modalData.request = JSON.parse(item.response);
       } catch (e) {
         this.modalData.request = item.request;
       }
