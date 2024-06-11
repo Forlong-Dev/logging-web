@@ -172,7 +172,7 @@ export default {
   },
   data() {
     return {
-      sites: ["crm-prod"],
+      sites: ["crm-prod", "kizumi-admin", "kizumi-ex", "kizumi-wallet"],
       modalShow: false,
       modalData: {},
 
