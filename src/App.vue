@@ -3,7 +3,7 @@
     <div class="container-fluid">
       <b-modal v-model="modalShow" size="xl">
         <div class="box">
-          <label for="request">Request</label>
+          <div>Request</div>
           <JsonViewer
             name="request"
             :value="modalData.request"
@@ -15,7 +15,7 @@
             sort
           />
 
-          <label for="response">Response</label>
+          <div>Response</div>
           <JsonViewer
             name="response"
             :value="modalData.response"
@@ -29,59 +29,93 @@
         </div>
       </b-modal>
 
-      <b-form @submit="loadData" @reset="reset">
-        <b-form-group id="input-group-3" label="Site:" label-for="input-3">
-          <b-form-select
-            id="input-3"
-            v-model="form.site"
-            :options="sites"
-            :fixed="true"
-            @input="onChange()"
-            required
-          ></b-form-select>
-        </b-form-group>
+      <b-form @submit="loadData">
+        <b-row>
+          <b-col>
+            <b-form-group id="input-group-3" label="Site:" label-for="input-5">
+              <b-form-select
+                id="input-5"
+                v-model="form.site"
+                :options="sites"
+                :fixed="true"
+                @input="onChange()"
+                required
+              ></b-form-select>
+            </b-form-group>
+          </b-col>
+          <b-col>
+            <b-form-group id="fieldset-1" label-for="input-1" label="Key: ">
+              <b-form-input
+                id="input-1"
+                v-model="form.key"
+                @input="onChange()"
+                trim
+              ></b-form-input>
+            </b-form-group>
+          </b-col>
 
-        <b-form-group id="fieldset-1" label-for="input-1" label="Key: ">
-          <b-form-input
-            id="input-1"
-            v-model="form.key"
-            @input="onChange()"
-            trim
-          ></b-form-input>
-        </b-form-group>
+          <b-col>
+            <b-form-group id="fieldset-2" label-for="input-2" label="URL: ">
+              <b-form-input
+                id="input-2"
+                v-model="form.url"
+                @input="onChange()"
+                trim
+              ></b-form-input>
+            </b-form-group>
+          </b-col>
+        </b-row>
 
-        <b-form-group id="fieldset-2" label-for="input-2" label="URL: ">
-          <b-form-input
-            id="input-2"
-            v-model="form.url"
-            @input="onChange()"
-            trim
-          ></b-form-input>
-        </b-form-group>
+        <b-row>
+          <b-col>
+            <b-form-group id="fieldset-3" label-for="input-3" label="Limit: ">
+              <b-form-input
+                id="input-3"
+                v-model="form.limit"
+                @input="onChange()"
+                trim
+              ></b-form-input>
+            </b-form-group>
+          </b-col>
 
-        <b-form-group id="fieldset-3" label-for="input-3" label="Limit: ">
-          <b-form-input
-            id="input-3"
-            v-model="form.limit"
-            @input="onChange()"
-            trim
-          ></b-form-input>
-        </b-form-group>
+          <b-col>
+            <b-form-group
+              id="fieldset-4"
+              label-for="input-4"
+              label="Session ID: "
+            >
+              <b-form-input
+                id="input-4"
+                v-model="form.sessionId"
+                @input="onChange()"
+                trim
+              ></b-form-input>
+            </b-form-group>
+          </b-col>
+        </b-row>
 
-        <b-form-group id="fieldset-4" label-for="input-4" label="Session ID: ">
-          <b-form-input
-            id="input-4"
-            v-model="form.sessionId"
-            @input="onChange()"
-            trim
-          ></b-form-input>
-        </b-form-group>
+        <b-row>
+          <div>Choose a date</div>
+          <VueDatePicker
+            id="datePicker"
+            v-model="form.date"
+            range
+            locale="kr"
+          />
+        </b-row>
 
-        <label for="example-datepicker">Choose a date</label>
-        <VueDatePicker v-model="form.date" range locale="kr" />
-
-        <b-button type="submit" variant="primary">Submit</b-button>
-        <b-button type="reset" variant="danger">Reset</b-button>
+        <b-row style="margin: 10px">
+          <b-col>
+            <b-button type="submit" variant="primary" style="width: 100%">
+              Submit
+            </b-button>
+          </b-col>
+          <b-col>
+            <b-button @click="reset()" variant="danger" style="width: 100%">
+              Reset
+            </b-button>
+          </b-col>
+        </b-row>
       </b-form>
 
       <!-- <b-table striped hover :items="items"></b-table> -->
@@ -108,8 +142,25 @@
             <td>{{ item.method }}</td>
             <td>{{ item.url }}</td>
             <td>{{ item.status }}</td>
-            <td>{{ item.key }}</td>
-            <td style="font-size: 12px">{{ item.sessionId }}</td>
+            <td>
+              <a
+                @click="
+                  this.form.key = item.key;
+                  loadData();
+                "
+                >{{ item.key }}</a
+              >
+            </td>
+            <td style="font-size: 12px">
+              <a
+                @click="
+                  this.form.sessionId = item.sessionId;
+                  loadData();
+                "
+              >
+                {{ item.sessionId }}
+              </a>
+            </td>
             <td>
               <button @click="fModalShow(item)" class="btn btn-secondary">
                 Detail
@@ -148,6 +199,7 @@ export default {
     onChange() {
       this.loadData();
     },
+
     loadData: async function () {
       axios
         .post("/api/load", this.form)
@@ -166,6 +218,8 @@ export default {
         url: "",
         limit: 100,
       };
+
+      this.loadData();
     },
 
     fModalShow: function (item) {
