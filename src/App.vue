@@ -217,6 +217,7 @@ export default {
         key: "",
         url: "",
         limit: 100,
+        sessionId: "",
       };
 
       this.loadData();
