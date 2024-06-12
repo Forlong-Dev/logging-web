@@ -68,6 +68,15 @@
           ></b-form-input>
         </b-form-group>
 
+        <b-form-group id="fieldset-4" label-for="input-4" label="Session ID: ">
+          <b-form-input
+            id="input-4"
+            v-model="form.sessionId"
+            @input="onChange()"
+            trim
+          ></b-form-input>
+        </b-form-group>
+
         <label for="example-datepicker">Choose a date</label>
         <VueDatePicker v-model="form.date" range locale="kr" />
 
@@ -85,6 +94,7 @@
             <th scope="col">Url</th>
             <th scope="col">Status</th>
             <th scope="col">Key</th>
+            <th scope="col">SESSION ID</th>
             <th scope="col">Detail</th>
           </tr>
         </thead>
@@ -94,11 +104,12 @@
             :key="item._id"
             :class="item.status !== '200' ? 'table-danger' : ''"
           >
-            <td>{{ item.timestamp }}</td>
+            <td>{{ new Date(item.timestamp).toLocaleString() }}</td>
             <td>{{ item.method }}</td>
             <td>{{ item.url }}</td>
             <td>{{ item.status }}</td>
             <td>{{ item.key }}</td>
+            <td style="font-size: 12px">{{ item.sessionId }}</td>
             <td>
               <button @click="fModalShow(item)" class="btn btn-secondary">
                 Detail
@@ -141,11 +152,6 @@ export default {
       axios
         .post("/api/load", this.form)
         .then((response) => {
-          for (let i = 0; i < response.data.length; i++) {
-            response.data[i].timestamp = new Date(
-              response.data[i].timestamp
-            ).toLocaleString();
-          }
           this.items = response.data;
         })
         .catch(() => {
@@ -183,7 +189,10 @@ export default {
     return {
       sites: ["crm-prod", "kizumi-admin", "kizumi-ex", "kizumi-wallet"],
       modalShow: false,
-      modalData: {},
+      modalData: {
+        response: {},
+        request: {},
+      },
 
       items: [],
 
@@ -192,6 +201,7 @@ export default {
         key: "",
         url: "",
         limit: 100,
+        sessionId: "",
       },
     };
   },
