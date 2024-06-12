@@ -7,17 +7,24 @@
           <JsonViewer
             name="request"
             :value="modalData.request"
-            :previewMode="true"
+            :previewMode="false"
+            :expanded="true"
+            :expandDepth="2"
             copyable
             theme="light"
+            sort
           />
 
           <label for="response">Response</label>
           <JsonViewer
             name="response"
             :value="modalData.response"
-            :previewMode="true"
+            :previewMode="false"
+            :expanded="true"
+            :expandDepth="2"
+            copyable
             theme="dark"
+            sort
           />
         </div>
       </b-modal>
@@ -110,10 +117,13 @@ import VueDatePicker from "@vuepic/vue-datepicker";
 import "@vuepic/vue-datepicker/dist/main.css";
 import { JsonViewer } from "vue3-json-viewer";
 
+import "vue-json-pretty/lib/styles.css";
+
 export default {
   setup() {},
   components: {
     VueDatePicker,
+    JsonViewer,
   },
   created() {
     this.loadData();
