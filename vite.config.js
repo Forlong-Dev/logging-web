@@ -8,7 +8,8 @@ export default defineConfig({
   server: {
     proxy: {
       "/api": {
-        target: "https://forlog.api.dev.forlong.io",
+        // target: "https://forlog.api.dev.forlong.io",
+        target: "http://localhost:14550",
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/api/, ""),
       },

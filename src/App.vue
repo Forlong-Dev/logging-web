@@ -38,30 +38,19 @@
                 v-model="form.site"
                 :options="sites"
                 :fixed="true"
-                @input="onChange()"
                 required
               ></b-form-select>
             </b-form-group>
           </b-col>
           <b-col>
             <b-form-group id="fieldset-1" label-for="input-1" label="Key: ">
-              <b-form-input
-                id="input-1"
-                v-model="form.key"
-                @input="onChange()"
-                trim
-              ></b-form-input>
+              <b-form-input id="input-1" v-model="form.key" trim></b-form-input>
             </b-form-group>
           </b-col>
 
           <b-col>
             <b-form-group id="fieldset-2" label-for="input-2" label="URL: ">
-              <b-form-input
-                id="input-2"
-                v-model="form.url"
-                @input="onChange()"
-                trim
-              ></b-form-input>
+              <b-form-input id="input-2" v-model="form.url" trim></b-form-input>
             </b-form-group>
           </b-col>
         </b-row>
@@ -72,7 +61,7 @@
               <b-form-input
                 id="input-3"
                 v-model="form.limit"
-                @input="onChange()"
+                type="number"
                 trim
               ></b-form-input>
             </b-form-group>
@@ -87,7 +76,6 @@
               <b-form-input
                 id="input-4"
                 v-model="form.sessionId"
-                @input="onChange()"
                 trim
               ></b-form-input>
             </b-form-group>
@@ -106,7 +94,12 @@
 
         <b-row style="margin: 10px">
           <b-col>
-            <b-button type="submit" variant="primary" style="width: 100%">
+            <b-button
+              type="submit"
+              variant="primary"
+              style="width: 100%"
+              :disabled="loading"
+            >
               Submit
             </b-button>
           </b-col>
@@ -188,23 +181,33 @@ export default {
     JsonViewer,
   },
   created() {
+    this.reset();
+    this.loadSite();
     this.loadData();
-
-    // 5초마다 데이터를 가져옴
-    setInterval(() => {
-      this.loadData();
-    }, 5000);
   },
   methods: {
-    onChange() {
-      this.loadData();
-    },
-
     loadData: async function () {
+      if (this.loading) return;
+
+      this.loading = true;
       axios
         .post("/api/load", this.form)
         .then((response) => {
           this.items = response.data;
+        })
+        .catch(() => {
+          console.log("error");
+        })
+        .finally(() => {
+          this.loading = false;
+        });
+    },
+
+    loadSite: async function () {
+      axios
+        .post("/api/site")
+        .then((response) => {
+          this.sites = response.data;
         })
         .catch(() => {
           console.log("error");
@@ -242,7 +245,8 @@ export default {
   },
   data() {
     return {
-      sites: ["crm-prod", "kizumi-admin", "kizumi-ex", "kizumi-wallet"],
+      loading: false,
+      sites: ["crm-prod"],
       modalShow: false,
       modalData: {
         response: {},
@@ -251,13 +255,7 @@ export default {
 
       items: [],
 
-      form: {
-        site: "crm-prod",
-        key: "",
-        url: "",
-        limit: 100,
-        sessionId: "",
-      },
+      form: {},
     };
   },
 };
