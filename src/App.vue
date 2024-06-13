@@ -155,7 +155,7 @@
               </a>
             </td>
             <td>
-              <button @click="fModalShow(item)" class="btn btn-secondary">
+              <button @click="fModalShow(item._id)" class="btn btn-secondary">
                 Detail
               </button>
             </td>
@@ -184,6 +184,11 @@ export default {
     this.reset();
     this.loadSite();
     this.loadData();
+
+    // 10초마다 loadData
+    setInterval(() => {
+      this.loadData();
+    }, 10000);
   },
   methods: {
     loadData: async function () {
@@ -214,6 +219,10 @@ export default {
         });
     },
 
+    loadDetail: async function (id) {
+      return await axios.post("/api/load/" + id);
+    },
+
     reset: function () {
       this.form = {
         site: "crm-prod",
@@ -226,20 +235,22 @@ export default {
       this.loadData();
     },
 
-    fModalShow: function (item) {
+    fModalShow: async function (item) {
       this.modalShow = true;
       this.modalData = {};
+      const response = await this.loadDetail(item);
+      const data = response.data;
 
       try {
-        this.modalData.response = JSON.parse(item.response);
+        this.modalData.response = JSON.parse(data.response);
       } catch (e) {
-        this.modalData.response = item.response;
+        this.modalData.response = data.response;
       }
 
       try {
-        this.modalData.request = JSON.parse(item.request);
+        this.modalData.request = JSON.parse(data.request);
       } catch (e) {
-        this.modalData.request = item.request;
+        this.modalData.request = data.request;
       }
     },
   },
